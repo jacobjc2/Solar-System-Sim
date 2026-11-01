@@ -1,0 +1,127 @@
+/* Layout: the sky is the app. Full-height canvas on the left, an instrument panel on the right; they stack on phones.
+   Deliberately single-theme: a night sky has one look. */
+:root {
+  --void: #06090f;
+  --sky: #090d16;
+  --panel: #0d121c;
+  --raise: #131a27;
+  --line: #1e2737;
+  --ink: #e6e9f0;
+  --muted: #8790a4;
+  --sun: #ffb547;
+  --sun-soft: rgba(255, 181, 71, 0.14);
+  --good: #72d6a4;
+  --warn: #ff8f70;
+  --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body, #root { height: 100%; }
+body { margin: 0; }
+body { background: var(--void); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.5; }
+* { box-sizing: border-box; }
+
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 340px; height: 100%; }
+
+.stage { position: relative; min-width: 0; min-height: 0; background: var(--sky); overflow: hidden; }
+.sky { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+
+.zoom { position: absolute; top: 14px; right: 14px; display: flex; flex-direction: column; gap: 6px; }
+.zoom button { width: 36px; height: 36px; padding: 0; font: 500 18px/1 var(--mono); }
+.zoom button.fit { font-size: 11px; letter-spacing: 0.04em; }
+
+.hint {
+  position: absolute; left: max(14px, env(safe-area-inset-left, 0px)); bottom: 12px; right: 140px;
+  font: 12px/1.4 var(--mono); color: var(--muted); pointer-events: none;
+}
+.toast {
+  position: absolute; left: max(14px, env(safe-area-inset-left, 0px)); top: 14px; max-width: calc(100% - 90px);
+  background: var(--raise); border: 1px solid var(--line); border-left: 2px solid var(--sun);
+  padding: 8px 12px; font-size: 13px; border-radius: 4px; transition: opacity 0.4s;
+}
+
+.panel {
+  border-left: 1px solid var(--line); background: var(--panel); overflow-y: auto; min-height: 0;
+  padding-block: 22px 28px; padding-left: 22px; padding-right: max(22px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+h1 { font: 400 40px/1 var(--display); margin: 0; letter-spacing: -0.01em; }
+h1 em { color: var(--sun); }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 36ch; }
+h2 {
+  margin: 0 0 10px; font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted);
+}
+
+.clock { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline; }
+.clock .t { font: 400 34px/1 var(--display); font-variant-numeric: tabular-nums; }
+.clock .meta { font: 12px/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+button {
+  font: 500 13px/1 var(--body); color: var(--ink); background: var(--raise); border: 1px solid var(--line);
+  border-radius: 6px; padding: 9px 12px; cursor: pointer;
+}
+button:hover { border-color: #33405a; }
+button:focus-visible, input:focus-visible + span, select:focus-visible, input[type=range]:focus-visible {
+  outline: 2px solid var(--sun); outline-offset: 2px;
+}
+button.primary { background: var(--sun); color: #1a1205; border-color: var(--sun); min-width: 88px; }
+button.primary:hover { filter: brightness(1.06); }
+
+.speed { display: grid; gap: 6px; margin-top: 12px; }
+.speed label { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.speed output { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--sun); }
+
+.scenarios { display: grid; gap: 6px; }
+.scenarios button {
+  text-align: left; padding: 10px 12px; line-height: 1.35; display: grid; gap: 3px; background: transparent;
+}
+.scenarios button b { font-weight: 600; font-size: 14px; }
+.scenarios button span { color: var(--muted); font-weight: 400; font-size: 12.5px; }
+.scenarios button[aria-pressed="true"] { background: var(--sun-soft); border-color: rgba(255, 181, 71, 0.5); }
+
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg label { position: relative; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; }
+.seg span {
+  display: grid; gap: 2px; padding: 9px 8px; border: 1px solid var(--line); border-radius: 6px; text-align: center;
+  font-size: 13px; font-weight: 500; background: var(--raise);
+}
+.seg span small { font: 11px var(--mono); color: var(--muted); }
+.seg input:checked + span { border-color: var(--sun); background: var(--sun-soft); }
+.note { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+
+.card { background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.card .name { display: flex; align-items: center; gap: 8px; font: 400 24px/1.1 var(--display); }
+.card .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.card dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; font-size: 13px; }
+.card dt { color: var(--muted); }
+.card dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.card p { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+.card .actions { margin-top: 12px; }
+.empty { color: var(--muted); font-size: 13px; margin: 0; }
+.ok { color: var(--good); }
+.bad { color: var(--warn); }
+
+.view { display: grid; gap: 10px; }
+.view select { width: 100%; font: 13px var(--body); color: var(--ink); background: var(--raise); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--sun); width: 16px; height: 16px; margin: 0; }
+
+ol.try { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--muted); font-size: 13px; }
+ol.try b { color: var(--ink); font-weight: 500; }
+.foot { font: 11.5px/1.5 var(--mono); color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+@media (max-width: 760px) {
+  html, body, #root { height: auto; }
+  .app { grid-template-columns: 1fr; height: auto; }
+  .stage { height: 62vh; min-height: 340px; }
+  .panel { border-left: 0; border-top: 1px solid var(--line); overflow: visible; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .hint { right: 14px; bottom: 10px; font-size: 11px; }
+  .zoom { right: max(14px, env(safe-area-inset-right, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
